@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SCharacter.h"
+#include "Public/SCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 
 // Sets default values
@@ -9,6 +11,12 @@ ASCharacter::ASCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SpringArmComp = CreateAbstractDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	SpringArmComp->bUsePawnControlRotation = true;
+	SpringArmComp->SetupAttachment(RootComponent);
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComp->SetupAttachment(SpringArmComp);
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +50,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MoveFoward", this, &ASCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASCharacter::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAxis("Turn", this, &ASCharacter::AddControllerYawInput);
 
 
 }
