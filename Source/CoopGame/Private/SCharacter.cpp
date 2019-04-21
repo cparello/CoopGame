@@ -6,6 +6,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "UnrealMathUtility.h"
 #include "Public/SWeapon.h"
+#include "GameFramework/Character.h"
 
 
 // Sets default values
