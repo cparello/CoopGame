@@ -7,6 +7,8 @@
 #include "UnrealMathUtility.h"
 #include "Public/SWeapon.h"
 #include "GameFramework/Character.h"
+#include "CoopGame.h"
+#include "Components/CapsuleComponent.h"
 
 
 // Sets default values
@@ -20,6 +22,8 @@ ASCharacter::ASCharacter()
 	SpringArmComp->SetupAttachment(RootComponent);
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
