@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/SHealthComponent.h"
 #include "SCharacter.generated.h"
 
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
 {
-	GENERATED_BODY()
+GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
@@ -32,6 +33,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class USpringArmComponent* SpringArmComp;
+
+	USHealthComponent* HealthComponent;
 
 	bool bWantsToZoom;
 
@@ -59,6 +62,12 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
 	FName WeaponAttachSocketName;
 
+	UFUNCTION()
+	void OnHealthChanged(USHealthComponent* HealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	bool bDied;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
