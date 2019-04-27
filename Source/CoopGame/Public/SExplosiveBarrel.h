@@ -24,30 +24,30 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-		USHealthComponent* HealthComp;
+	USHealthComponent* HealthComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-		UStaticMeshComponent* MeshComp;
+	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-		URadialForceComponent* RadialForceComp;
+	URadialForceComponent* RadialForceComp;
 
 	UFUNCTION()
-		void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType,
-			class AController* InstigatedBy, AActor* DamageCauser);
+	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType,
+	class AController* InstigatedBy, AActor* DamageCauser);
 
 	bool bExploded;
 
 	/* Impulse applied to the barrel mesh when it explodes to boost it up a little */
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
-		float ExplosionImpulse;
+	float ExplosionImpulse;
 
 	/* Particle to play when health reached zero */
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
-		UParticleSystem* ExplosionEffect;
+	UParticleSystem* ExplosionEffect;
 
 	/* The material to replace the original on the mesh once exploded (a blackened version) */
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
-		UMaterialInterface* ExplodedMaterial;
+	UMaterialInterface* ExplodedMaterial;
 
 };

@@ -14,6 +14,7 @@
 #include "TimerManager.h"
 #include "UnrealMathUtility.h"
 #include "UnrealMathVectorCommon.h"
+#include "UnrealNetwork.h"
 
 
 static int32 DebugWeaponDrawing = 0;
@@ -37,6 +38,8 @@ ASWeapon::ASWeapon()
 
 	BaseDamage = 20.0f;
 	RateOfFire = 600;
+
+	SetReplicates(true);
 }
 
 void ASWeapon::StartFire()
@@ -61,6 +64,12 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::Fire()
 {
+
+	if(Role < ROLE_Authority)
+	{
+		ServerFire();
+	}
+
 	//trace the world from pawn to cross hair
 	AActor* MyOwner = GetOwner();
 
@@ -122,12 +131,32 @@ void ASWeapon::Fire()
 			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
 		}
 
-		
+		if(Role == ROLE_Authority)
+		{
+			HitScanTrace.TraceTo = TracerEndPoint;
+		}
 
 		PlayFireEffects(TracerEndPoint);
 
+
+
 		LastFireTime = GetWorld()->TimeSeconds;
 	}
+}
+
+void ASWeapon::OnRep_HitScanTrace()
+{
+	PlayFireEffects(HitScanTrace.TraceTo);
+}
+
+void ASWeapon::ServerFire_Implementation()
+{
+	Fire();
+}
+
+bool ASWeapon::ServerFire_Validate()
+{
+	return true;
 }
 
 void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
@@ -151,5 +180,12 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 		}
 		
 	}
+}
+
+void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ASWeapon, HitScanTrace, COND_SkipOwner);
 }
 
