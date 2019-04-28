@@ -39,7 +39,7 @@ protected:
 	UPROPERTY(ReplicatedUsing=OnRep_Exploded)
 	bool bExploded;
 
-	UFUNCTION();
+	UFUNCTION()
 	void OnRep_Exploded();
 
 	/* Impulse applied to the barrel mesh when it explodes to boost it up a little */
