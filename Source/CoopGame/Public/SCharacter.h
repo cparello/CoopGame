@@ -68,7 +68,7 @@ protected:
 	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	UPROPERTY(Replicate, BlueprintReadOnly, Category = "Player")
 	bool bDied;
 public:	
 	// Called every frame
