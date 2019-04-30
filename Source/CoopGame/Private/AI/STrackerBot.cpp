@@ -8,6 +8,8 @@
 #include "AI/Navigation/NavigationPath.h"
 #include "SHealthComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "GameFramework/Actor.h"
+#include "DrawDebugHelpers.h"
 
 
 // Sets default values
@@ -28,6 +30,8 @@ ASTrackerBot::ASTrackerBot()
 	bUseVelocityChange = false;
 	MovementForce = 10000;
 	RequiredDistanceToTarget = 100;
+	ExplosionDamage = 40;
+	ExplosionRadius = 200;
 }
 
 // Called when the game starts or when spawned
@@ -49,10 +53,32 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float H
 		MaterialInstance->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
 
 	}
+	MeshComp->SetWorldScale3D(MeshComp->GetComponentScale() * 1.2);
+	ExplosionRadius *= 1.2;
+	ExplosionDamage *= 1.2;
 	
 
 	UE_LOG(LogTemp, Warning, TEXT(" Health %s of %s"), *FString::SanitizeFloat(Health), *GetName())
+
+		if (Health <= 0.0f)
+		{
+			SelfDestruct();
+		}
 }
+
+// FVector ASTrackerBot::GetRandomPathPoint()
+// {
+// 	ACharacter* PlayerPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
+// 	UNavigationPath* NavPath = UNavigationSystem::GetRandomPoint()
+// 	GetRandomReachablePointInRadius(GetActorLocation(), 50.0f, ResultLocation, GetWorld()->N, QueryFilter);
+// 
+// 	if (NavPath->PathPoints.Num() > 1)
+// 	{
+// 		return NavPath->PathPoints[1];
+// 	}
+// 
+// 	return GetActorLocation();
+// }
 
 FVector ASTrackerBot::GetNextPathPoint()
 {
@@ -65,6 +91,25 @@ FVector ASTrackerBot::GetNextPathPoint()
 	}
 
 	return GetActorLocation();
+}
+
+void ASTrackerBot::SelfDestruct()
+{
+	if(bExploded) return;
+	bExploded = true;
+
+	
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(this);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+
+
+	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+	Destroy();
 }
 
 // Called every frame
