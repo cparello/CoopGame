@@ -24,6 +24,9 @@ protected:
 
 	class USHealthComponent* HealthComp;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
+	class USphereComponent* SphereComp;
+
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 
@@ -49,15 +52,24 @@ protected:
 
 	bool bExploded;
 
-	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
-		float ExplosionRadius;
+	// Did we already kick off self destruct timer
+	bool bStartedSelfDestruction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
-		float ExplosionDamage;
+	float ExplosionRadius;
 
-public:	
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float ExplosionDamage;
+
+	FTimerHandle TimerHandle_SelfDamage;
+
+	void DamageSelf();
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 };
