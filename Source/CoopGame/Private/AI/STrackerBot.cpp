@@ -12,6 +12,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"
 #include "SCharacter.h"
+#include "Sound/SoundCue.h"
 
 
 // Sets default values
@@ -41,6 +42,7 @@ ASTrackerBot::ASTrackerBot()
 	RequiredDistanceToTarget = 100;
 	ExplosionDamage = 40;
 	ExplosionRadius = 200;
+	SelfDamageInterval = 0.25f;
 }
 
 // Called when the game starts or when spawned
@@ -66,9 +68,13 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 			// We overlapped with a player!
 
 			// Start self destruction sequence
-			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+			
+
+			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
 
 			bStartedSelfDestruction = true;
+
+			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 		}
 	}
 }
@@ -138,6 +144,7 @@ void ASTrackerBot::SelfDestruct()
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 
+	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 	Destroy();
