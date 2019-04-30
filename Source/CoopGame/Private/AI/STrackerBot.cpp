@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "AI/Navigation/NavigationPath.h"
 #include "SHealthComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 
 // Sets default values
@@ -15,6 +16,7 @@ ASTrackerBot::ASTrackerBot()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	//MeshComp->bCanEverAffectNavigation = false;
 	MeshComp->SetSimulatePhysics(true);
@@ -38,6 +40,17 @@ void ASTrackerBot::BeginPlay()
 
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta,	const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+	if(MaterialInstance == nullptr)
+	{
+		MaterialInstance = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+	if(MaterialInstance)
+	{
+		MaterialInstance->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
+
+	}
+	
+
 	UE_LOG(LogTemp, Warning, TEXT(" Health %s of %s"), *FString::SanitizeFloat(Health), *GetName())
 }
 
