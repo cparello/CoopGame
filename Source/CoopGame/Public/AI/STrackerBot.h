@@ -76,6 +76,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 		USoundCue* ExplodeSound;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	class URadialForceComponent* RadialForceComp;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

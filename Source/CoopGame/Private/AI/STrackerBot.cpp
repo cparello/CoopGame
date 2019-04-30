@@ -13,6 +13,7 @@
 #include "Components/SphereComponent.h"
 #include "SCharacter.h"
 #include "Sound/SoundCue.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 
 
 // Sets default values
@@ -26,6 +27,13 @@ ASTrackerBot::ASTrackerBot()
 	//MeshComp->bCanEverAffectNavigation = false;
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
+
+	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
+	RadialForceComp->SetupAttachment(MeshComp);
+	RadialForceComp->Radius = 250;
+	RadialForceComp->bImpulseVelChange = true;
+	RadialForceComp->bAutoActivate = false; // Prevent component from ticking, and only use FireImpulse() instead
+	RadialForceComp->bIgnoreOwningActor = true; // ignore self
 
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
@@ -147,6 +155,7 @@ void ASTrackerBot::SelfDestruct()
 	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+	RadialForceComp->FireImpulse();
 	Destroy();
 }
 
