@@ -34,6 +34,11 @@ protected:
 
 	FVector GetNextPathPoint();
 
+	void OnCheckNearbyBots();
+
+	// the power boost of the bot, affects damaged caused to enemies and color of the bot (range: 1 to 4)
+	int32 PowerLevel;
+
 	FVector NextPathPoint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
