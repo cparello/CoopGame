@@ -57,8 +57,11 @@ ASTrackerBot::ASTrackerBot()
 void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();
+	if(Role == ROLE_Authority)
+	{
+		NextPathPoint = GetNextPathPoint();
 
-	NextPathPoint = GetNextPathPoint();
+	}
 }
 
 void ASTrackerBot::DamageSelf()
@@ -68,7 +71,7 @@ void ASTrackerBot::DamageSelf()
 
 void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if (!bStartedSelfDestruction)
+	if (!bStartedSelfDestruction && !bExploded)
 	{
 		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
 		if (PlayerPawn)
@@ -77,9 +80,11 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 
 			// Start self destruction sequence
 			
-
-			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
-
+			if(Role == ROLE_Authority)
+			{
+				GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
+			}
+			
 			bStartedSelfDestruction = true;
 
 			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
@@ -143,20 +148,29 @@ void ASTrackerBot::SelfDestruct()
 	if(bExploded) return;
 	bExploded = true;
 
-	
-
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
-
-	TArray<AActor*> IgnoredActors;
-	IgnoredActors.Add(this);
-
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
-
 	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 
-	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
-	RadialForceComp->FireImpulse();
-	Destroy();
+	MeshComp->SetVisibility(false, true);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SphereComp->SetVisibility(false, true);
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if(Role == ROLE_Authority)
+	{
+		TArray<AActor*> IgnoredActors;
+		IgnoredActors.Add(this);
+
+		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+
+		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+		RadialForceComp->FireImpulse();
+
+		//Destroy();
+
+		SetLifeSpan(2.0f);
+	}
+	
 }
 
 // Called every frame
@@ -164,19 +178,23 @@ void ASTrackerBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
-
-	if (DistanceToTarget <= RequiredDistanceToTarget)
+	if(Role == ROLE_Authority && !bExploded)
 	{
-			NextPathPoint = GetNextPathPoint();
+		float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
 
-	}else{
-		FVector ForceDirection = NextPathPoint - GetActorLocation();
-		ForceDirection.Normalize();
+		if (DistanceToTarget <= RequiredDistanceToTarget)
+		{
+				NextPathPoint = GetNextPathPoint();
 
-		ForceDirection *= MovementForce;
-		MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
-	};
+		}else{
+			FVector ForceDirection = NextPathPoint - GetActorLocation();
+			ForceDirection.Normalize();
+
+			ForceDirection *= MovementForce;
+			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
+		};
+	}
+	
 }
 
 
