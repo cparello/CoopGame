@@ -17,7 +17,7 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "powerup")
-	void OnActivated();
+	void OnActivated(AActor* ActiveFor);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "powerup")
 	void OnExpired();
@@ -25,7 +25,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "powerup")
 	void OnPowerupTicked();
 
-	void ActivatePowerup();
+	void ActivatePowerup(AActor* ActiveFor);
 
 protected:
 

@@ -20,9 +20,9 @@ ASPowerpActor::ASPowerpActor()
 	SetReplicates(true);
 }
 
-void ASPowerpActor::ActivatePowerup()
+void ASPowerpActor::ActivatePowerup(AActor* ActiveFor)
 {
-	OnActivated();
+	OnActivated(ActiveFor);
 
 	bIsPowerupActive = true;
 	OnRep_PowerupActive();
