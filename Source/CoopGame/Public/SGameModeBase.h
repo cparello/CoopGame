@@ -6,6 +6,11 @@
 #include "GameFramework/GameModeBase.h"
 #include "SGameModeBase.generated.h"
 
+enum class EWaveState : unsigned char;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
+
+
 /**
  * 
  */
@@ -42,6 +47,8 @@ protected:
 
 	void GameOver();
 
+	void SetWaveState(EWaveState NewState);
+
 public:
 
 	virtual	void StartPlay() override;
@@ -49,5 +56,8 @@ public:
 	ASGameModeBase();
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY(BlueprintAssignable, Category = "GameMode")
+		FOnActorKilled OnActorKilled;
 	
 };

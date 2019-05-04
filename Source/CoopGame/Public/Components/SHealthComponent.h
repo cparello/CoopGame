@@ -23,6 +23,7 @@ public:
 	float GetHealth() const;
 
 protected:
+	bool bIsDead;
 
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 	void Heal(float HealAmount);
