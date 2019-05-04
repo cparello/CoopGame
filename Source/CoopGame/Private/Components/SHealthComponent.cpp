@@ -14,6 +14,11 @@ USHealthComponent::USHealthComponent()
 }
 
 
+float USHealthComponent::GetHealth() const
+{
+	return Health;
+}
+
 void USHealthComponent::Heal(float HealAmount)
 {
 	if (HealAmount <= 0.0f || Health <= 0.0f)

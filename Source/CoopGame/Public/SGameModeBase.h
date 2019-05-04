@@ -20,7 +20,6 @@ protected:
 
 	void SpawnBotTimerElapsed();
 	
-	
 	void StartWave();
 
 	void EndWave();
@@ -28,6 +27,7 @@ protected:
 	void PrepareForNextWave();
 
 	FTimerHandle TimerHandle_BotSpawner;
+	FTimerHandle TimerHandle_NextWaveStart;
 
 	int32 NrOfBotsSpawned;
 
@@ -36,12 +36,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
 	float TimeBetweenWaves;
 
+	void CheckWaveState();
+
 public:
 
 	virtual	void StartPlay() override;
 
 	ASGameModeBase();
 
-
+	virtual void Tick(float DeltaSeconds) override;
 	
 };
