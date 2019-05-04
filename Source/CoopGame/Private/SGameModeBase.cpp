@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "SHealthComponent.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/Actor.h"
 
 ASGameModeBase::ASGameModeBase()
 {
@@ -19,6 +20,7 @@ void ASGameModeBase::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	CheckWaveState();
+	CheckAnyPlayerAlive();
 }
 
 void ASGameModeBase::SpawnBotTimerElapsed()
@@ -82,6 +84,32 @@ void ASGameModeBase::CheckWaveState()
 	{
 		PrepareForNextWave();
 	}
+}
+
+void ASGameModeBase::CheckAnyPlayerAlive()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if(PC && PC->GetPawn())
+		{
+			APawn* MyPawn = PC->GetPawn();
+			USHealthComponent* HealthComp = Cast<USHealthComponent>(MyPawn->GetComponentByClass(USHealthComponent::StaticClass()));
+
+			if (ensure(HealthComp) && HealthComp->GetHealth() > 0.0f) return;
+
+		}
+	}
+
+	GameOver();
+}
+
+void ASGameModeBase::GameOver()
+{
+	EndWave();
+
+	UE_LOG(LogTemp, Log, TEXT("Gameover "))
+
 }
 
 void ASGameModeBase::StartPlay()
