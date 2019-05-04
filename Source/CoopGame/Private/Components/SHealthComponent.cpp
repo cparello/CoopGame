@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "UnrealNetwork.h"
 #include "SGameModeBase.h"
+#include "Components/ActorComponent.h"
 
 
 // Sets default values for this component's properties

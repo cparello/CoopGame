@@ -58,6 +58,6 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(BlueprintAssignable, Category = "GameMode")
-		FOnActorKilled OnActorKilled;
+	FOnActorKilled OnActorKilled;
 	
 };
