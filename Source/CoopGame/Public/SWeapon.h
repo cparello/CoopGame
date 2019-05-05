@@ -33,6 +33,9 @@ public:
 	void StopFire();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin=0.0f))	
+	float BulletSpread;
+
 	virtual void BeginPlay() override;
 
 	virtual void Fire();
