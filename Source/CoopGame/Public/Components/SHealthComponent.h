@@ -22,6 +22,12 @@ public:
 
 	float GetHealth() const;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HealthComponents")
+	uint8 TeamNum;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "HealthComponent")
+	static bool IsFriendly(AActor* ActorA, AActor* ActorB);
+
 protected:
 	bool bIsDead;
 
