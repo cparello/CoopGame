@@ -84,6 +84,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class URadialForceComponent* RadialForceComp;
 
+	FTimerHandle TimerHandle_RefreshPath;
+
+	void RefreshPathPoint();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
